@@ -1927,12 +1927,10 @@ func buildRequestBodyType(body, att *expr.AttributeExpr, e *expr.HTTPEndpointExp
 			def = goTypeDef(sd.Scope, ut.Attribute(), svr, !svr)
 			desc = fmt.Sprintf("%s is the type of the %q service %q endpoint HTTP request body.",
 				varname, svc.Name, e.Name())
-			if svr {
-				// generate validation code for unmarshaled type (server-side).
-				validateDef = codegen.RecursiveValidationCode(ut.Attribute(), httpctx, true, "body")
-				if validateDef != "" {
-					validateRef = fmt.Sprintf("err = Validate%s(&body)", varname)
-				}
+			// generate validation code for unmarshaled type (both client and server-side).
+			validateDef = codegen.RecursiveValidationCode(ut.Attribute(), httpctx, true, "body")
+			if validateDef != "" {
+				validateRef = fmt.Sprintf("err = Validate%s(&body)", varname)
 			}
 		} else {
 			varname = sd.Scope.GoTypeRef(body)
